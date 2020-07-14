@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script src="/__/firebase/7.16.0/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script src="/__/firebase/7.16.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-firestore.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script src="/__/firebase/init.js"></script>
+  </head>
+  <body>
+  <h1>Bloomington EOC</h1>
+
+    <div class="content">
+
+        <div id="map" style="width: 100%; height: 400px; background-color: grey;"></div>
+
+        <ul id="cafe-list"></ul>
+
+    </div>
+
+    <script>
+        const db = firebase.firestore();
+    </script>
+
+    <script>
+        var map;
+        var mapBounds;
+        var markers = [];
+
+        // real-time listener
+        db.collection('markers').onSnapshot(snapshot => {
+            let changes = snapshot.docChanges();
+            changes.forEach(change => {
+                console.log(change.doc.data());
+                if(change.type == 'added'){
+                    console.log(change.doc.data());
+                    markers.push(change.doc.data());
+                    console.log('Markers: ' + markers.length);
+                    addMarker(change.doc.data());
+                } else if (change.type == 'removed'){
+                    //let li = cafeList.querySelector('[data-id=' + change.doc.id + ']');
+                    //cafeList.removeChild(li);
+                }
+            });
+        });
+
+        // Initialize and add the map
+        function initMap() {
+            mapBounds = new google.maps.LatLngBounds();
+            var bloomington = {lat: parseFloat(39.1671327), lng: parseFloat(-86.5364272)};
+            // Find the center of the coordinates
+            // centerPoint = averageGeolocation(markers);
+            // The map, centered in between all of the photo coordinates
+            map = new google.maps.Map(
+                //document.getElementById('map'), {zoom: 4, center: centerPoint});
+                document.getElementById('map'), {zoom: 12, center: bloomington});
+            
+            // Get markers for each of the photos in the collection
+            //setMarkers(map, mapBounds, markers);
+        }
+        /*
+        function setMarkers(map, bounds, markers) {
+            for (var i = 0; i < markers.length; i++) {
+                var myLatlng = new google.maps.LatLng(markers[i].latitude,markers[i].longitude);
+                // Create a new marker object
+                var marker = new google.maps.Marker({
+                    position: myLatlng,
+                    icon: markers[i].markerURL,
+                    url: markers[i].photoURL
+                });
+                // Add a click listener for the photo
+                google.maps.event.addListener(marker, 'click', function() {
+                    window.location.href = this.url;
+                });
+                // To add the marker to the map, call setMap();
+                marker.setMap(map);
+                // Increase the size of the map, if needed
+                bounds.extend(marker.position);
+                // Resize the map to fit all of the markers
+                //map.fitBounds(bounds);
+            }
+        } */
+        function addMarker(marker) {
+            var myLatlng = new google.maps.LatLng(marker.latitude,marker.longitude);
+            // Create a new marker object
+            console.log(marker.latitude);
+            console.log(myLatlng);
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                icon: marker.markerURL,
+                url: marker.photoURL
+            });
+            // Add a click listener for the photo
+            google.maps.event.addListener(marker, 'click', function() {
+                window.location.href = this.url;
+            });
+            // To add the marker to the map, call setMap();
+            marker.setMap(map);
+            console.log('Added a marker.');
+            // Increase the size of the map, if needed
+            mapBounds.extend(marker.position);
+            // Resize the map to fit all of the photos
+            map.fitBounds(mapBounds);
+        }
+    </script>
+    
+    <script src="app.js"></script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhX8U4k3Msr1cSI62hHg-8V3M0PvLD8pI&callback=initMap"></script>
+</body>
+</html>
