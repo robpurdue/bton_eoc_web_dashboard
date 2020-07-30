@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <title>Bloomington EOC Citizen Report Simulator</title>
 
     <!-- update the version number as needed -->
     <script src="/__/firebase/7.16.0/firebase-app.js"></script>
@@ -14,21 +14,83 @@
     <script src="/__/firebase/init.js"></script>
     <!-- sample datasets for simulated disasters -->
     <script src="data.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/modern-business.css" rel="stylesheet">
+
   </head>
   <body>
-  <h1>Bloomington EOC</h1>
+  <!-- Navigation -->
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Bloomington Citizen Report Simulator</a>
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
 
-    <div class="content">
+    <div class="content" style="padding: 20px;">
 
-        <div id="map" style="width: 100%; height: 400px; background-color: grey;"></div>
+        <div id="map" style="width: 100%; height: 400px; background-color: grey; padding-bottom: 20px;"></div>
 
-        <ul id="cafe-list"></ul>
+        <!-- Marketing Icons Section -->
+        <div class="row" style="padding-top: 20px">
+          <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+              <h4 class="card-header">Add Citizen Reports</h4>
+              <div class="card-body">
+                <p class="card-text">
+                  <button onclick="simulateCall('storm')">Add Report - Storm</button><br/><br/>
+                  <button onclick="simulateCall('crash')">Add Report - Plane Crash</button><br/><br/>
+                  <button onclick="simulateCall('explosion')">Add Report - Explosion</button><br/><br/>
+                </p>
+              </div>
+              <div class="card-footer">
+                <button onclick='clearDatabase()' class="btn-primary">Clear Database</button><br/><br/>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+              <h4 class="card-header">About this Simulation</h4>
+              <div class="card-body">
+                <p>The map above will update in real-time as "citizen reports" of emergency situations are submitted from the front-end application(s) such as the companion Android application.</p>
+                <p>The buttons to the right allow a viewer to update the map by submitting fake reports for one of three separate disaster scenarios in Bloomington, IN:
+                  <ul>
+                    <li>A supercell thunderstorm that does damage in a residential area just east of the IU campus</li>
+                    <li>A small plane crash on takeoff/approach to the Monroe County Airport</li>
+                    <li>An explosion at Luddy Hall on the IU campus</li>
+                  </ul>
+                </p>
+                <p>Clicking the <strong>Add Report</strong> buttons above will write a record to the database and update the map in real-time.  The map can be reset at anytime by clicking <strong>Clear Database</strong>.</p>        
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+              <h4 class="card-header">Technology</h4>
+              <div class="card-body">
+                <p>This small website uses the Google Maps Javascript API to display information about the reports that have been made.  The map responds to changes in the Cloud Firestore database, a real-time NoSQL database that is part of the Google Cloud Platform.</p>
 
-        <button onclick='clearDatabase()'>Clear Database</button><br/>
-        <button onclick="simulateCall('storm')">Add Call - Storm</button><br/>
-        <button onclick="simulateCall('crash')">Add Call - Plane Crash</button><br/>
-        <button onclick="simulateCall('explosion')">Add Call - Explosion</button>
+                The order of operations of a simulated call is this:
 
+                <ol>
+                  <li>Clicking the "Add Report" button above writes a record to the database that contains Lat, Long, and a brief description of the type of emergency situation (fire, personal injury, etc.)</li>
+                  <li>The website listens to the database and detects when a new record has been added.</li>
+                  <li>When a new record is added to the database, the map adds a marker with its corresponding icon and resizes itself so that all reports are visible.</li>
+                </ol>
+
+                <p>Resetting the database deletes all of the records and resets the map.</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        
     </div>
 
     <script>
